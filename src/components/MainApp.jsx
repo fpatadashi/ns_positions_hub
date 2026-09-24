@@ -4,15 +4,17 @@ import { supabase } from '../supabaseClient';
 import ChairIcons from '../icons/ChairIcons';
 import NavTabs from './NavTabs';
 import EstruturaTab from './EstruturaTab';
+import DashboardTab from './DashboardTab';
 import RegrasTab from './RegrasTab';
 import MovimentacoesTab from './MovimentacoesTab';
 import ConfiguracaoTab from './ConfiguracaoTab';
 
 const TABS = [
-  { key: 'estrutura', label: 'Estrutura' },
-  { key: 'regras', label: 'Regras' },
-  { key: 'movimentacoes', label: 'Movimentações' },
-  { key: 'configuracao', label: 'Configuração' }
+  { key: 'estrutura', label: 'Estrutura', sprint: 1 },
+  { key: 'regras', label: 'Regras', sprint: 1 },
+  { key: 'dashboard', label: 'Dashboard', sprint: 2 },
+  { key: 'movimentacoes', label: 'Movimentações', sprint: 3 },
+  { key: 'configuracao', label: 'Configuração', sprint: null }
 ];
 
 export default function MainApp({ session }) {
@@ -36,6 +38,7 @@ export default function MainApp({ session }) {
         <NavTabs tabs={TABS} active={activeTab} onChange={setActiveTab} />
 
         {activeTab === 'estrutura' && <EstruturaTab />}
+        {activeTab === 'dashboard' && <DashboardTab />}
         {activeTab === 'regras' && <RegrasTab />}
         {activeTab === 'movimentacoes' && <MovimentacoesTab />}
         {activeTab === 'configuracao' && <ConfiguracaoTab />}

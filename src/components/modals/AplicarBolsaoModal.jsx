@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import Modal from './Modal';
 import { useAppData } from '../../context/AppDataContext';
-import { TORRES, CARGO_ORDER, CARGO_INFO, cargoLabel } from '../../data/cargo';
+import { CARGO_ORDER, CARGO_INFO, cargoLabel } from '../../data/cargo';
 import { fmtBRL } from '../../lib/format';
+import { torresPermitidas, empresasPermitidas } from '../../lib/relacao';
 
 export default function AplicarBolsaoModal({ onClose, onDone }) {
-  const { chairs, bolsao, meritoStandalone, applyBolsaoNovaVaga } = useAppData();
+  const { chairs, bolsao, buList, torreList, empresaList, relacaoBte, meritoStandalone, applyBolsaoNovaVaga } = useAppData();
   const occupied = chairs.filter((c) => c.status === 'ocupada');
 
   const [mode, setMode] = useState('merito');
   const [meritoTarget, setMeritoTarget] = useState(occupied[0]?.id || '');
   const [meritoValor, setMeritoValor] = useState('');
-  const [nvTorre, setNvTorre] = useState(TORRES[0]);
+  const [nvBu, setNvBu] = useState(buList[0]?.nome || '');
+  const [nvTorre, setNvTorre] = useState('');
+  const [nvEmpresa, setNvEmpresa] = useState('');
   const [nvCargo, setNvCargo] = useState(CARGO_ORDER[0]);
   const [nvValor, setNvValor] = useState('');
   const [error, setError] = useState('');
@@ -31,7 +34,8 @@ export default function AplicarBolsaoModal({ onClose, onDone }) {
     }
   } else {
     const v2 = parseFloat(nvValor) || 0;
-    if (v2 <= 0) { msg = 'Informe um valor maior que zero.'; valid = false; }
+    if (!nvEmpresa) { msg = 'Selecione a empresa da nova vaga.'; valid = false; }
+    else if (v2 <= 0) { msg = 'Informe um valor maior que zero.'; valid = false; }
     else if (v2 > bolsao) { msg = 'Bolsão insuficiente (disponível ' + fmtBRL(bolsao) + ').'; valid = false; }
     else msg = 'Nova vaga será criada com ' + fmtBRL(v2) + '.';
   }
@@ -41,7 +45,7 @@ export default function AplicarBolsaoModal({ onClose, onDone }) {
     try {
       const res = mode === 'merito'
         ? await meritoStandalone(meritoTarget, parseFloat(meritoValor) || 0)
-        : await applyBolsaoNovaVaga(nvTorre, nvCargo, parseFloat(nvValor) || 0);
+        : await applyBolsaoNovaVaga(nvBu, nvTorre, nvEmpresa, nvCargo, parseFloat(nvValor) || 0);
       if (!res.ok) { setError(res.msg); setBusy(false); return; }
       onDone();
     } catch (e) {
@@ -65,7 +69,7 @@ export default function AplicarBolsaoModal({ onClose, onDone }) {
             {occupied.length === 0
               ? <option value="">Nenhuma cadeira ocupada</option>
               : occupied.map((c) => (
-                  <option key={c.id} value={c.id}>{c.id} — {cargoLabel(c.cargo)} ({c.torre}) — {c.ocupante}</option>
+                  <option key={c.id} value={c.id}>{c.id} — {cargoLabel(c.cargo)} ({c.bu}) — {c.ocupante}</option>
                 ))}
           </select>
           <label className="modal-label" style={{ marginTop: 10 }}>Valor</label>
@@ -73,9 +77,19 @@ export default function AplicarBolsaoModal({ onClose, onDone }) {
         </div>
       ) : (
         <div className="modal-section">
-          <label className="modal-label">Torre</label>
-          <select value={nvTorre} onChange={(e) => setNvTorre(e.target.value)}>
-            {TORRES.map((t) => <option key={t} value={t}>{t}</option>)}
+          <label className="modal-label">BU</label>
+          <select value={nvBu} onChange={(e) => { setNvBu(e.target.value); setNvTorre(''); setNvEmpresa(''); }}>
+            {buList.map((b) => <option key={b.nome} value={b.nome}>{b.nome}</option>)}
+          </select>
+          <label className="modal-label" style={{ marginTop: 10 }}>Torre</label>
+          <select value={nvTorre} onChange={(e) => { setNvTorre(e.target.value); setNvEmpresa(''); }}>
+            <option value="">— Sem torre —</option>
+            {torresPermitidas(relacaoBte, nvBu, torreList).map((t) => <option key={t.nome} value={t.nome}>{t.nome}</option>)}
+          </select>
+          <label className="modal-label" style={{ marginTop: 10 }}>Empresa</label>
+          <select value={nvEmpresa} onChange={(e) => setNvEmpresa(e.target.value)}>
+            <option value="">Selecione a empresa</option>
+            {empresasPermitidas(relacaoBte, nvBu, nvTorre, empresaList).map((e) => <option key={e.nome} value={e.nome}>{e.nome}</option>)}
           </select>
           <label className="modal-label" style={{ marginTop: 10 }}>Cargo</label>
           <select value={nvCargo} onChange={(e) => setNvCargo(e.target.value)}>

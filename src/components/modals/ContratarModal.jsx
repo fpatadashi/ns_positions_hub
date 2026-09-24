@@ -24,7 +24,7 @@ export default function ContratarModal({ chair, onClose, onDone }) {
   return (
     <Modal onClose={onClose}>
       <h3>Contratar para {chair.id}</h3>
-      <p className="modal-sub">{cargoLabel(chair.cargo)} · {chair.torre} · {fmtBRL(chair.valor)}</p>
+      <p className="modal-sub">{cargoLabel(chair.cargo)} · {chair.bu} · {fmtBRL(chair.valor)}</p>
       <div className="modal-section">
         <label className="modal-label">Nome do(a) colaborador(a)</label>
         <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex: Ana Souza" />

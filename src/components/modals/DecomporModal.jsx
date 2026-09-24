@@ -2,13 +2,16 @@ import { useState } from 'react';
 import Modal from './Modal';
 import DestinoFields from './DestinoFields';
 import { useAppData } from '../../context/AppDataContext';
-import { TORRES, CARGO_ORDER, cargoLabel } from '../../data/cargo';
+import { CARGO_ORDER, cargoLabel, MIN_CARGO_VALOR } from '../../data/cargo';
 import { fmtBRL } from '../../lib/format';
+import { previewNewId, previewCompositionId } from '../../lib/chairActions';
 
 export default function DecomporModal({ chair, onClose, onDone }) {
-  const { chairs, decomposeChair } = useAppData();
+  const { chairs, buList, torreList, empresaList, relacaoBte, decomposeChair } = useAppData();
   const [destTipo, setDestTipo] = useState('nova');
-  const [destTorre, setDestTorre] = useState(TORRES[0]);
+  const [destBu, setDestBu] = useState(buList[0]?.nome || '');
+  const [destTorre, setDestTorre] = useState('');
+  const [destEmpresa, setDestEmpresa] = useState('');
   const [destCargo, setDestCargo] = useState(CARGO_ORDER[0]);
   const [destChairId, setDestChairId] = useState('');
   const [valor, setValor] = useState('');
@@ -16,6 +19,7 @@ export default function DecomporModal({ chair, onClose, onDone }) {
   const [busy, setBusy] = useState(false);
 
   const otherVagas = chairs.filter((c) => c.status === 'vaga' && c.id !== chair.id);
+  const destChair = destChairId ? otherVagas.find((c) => c.id === destChairId) : null;
   const v = parseFloat(valor) || 0;
 
   let msg = '';
@@ -29,15 +33,23 @@ export default function DecomporModal({ chair, onClose, onDone }) {
   } else if (destTipo === 'existente' && !destChairId) {
     msg = 'Selecione a cadeira de destino.';
     valid = false;
-  } else {
-    const restante = Number(chair.valor) - v;
-    msg = 'Restará em ' + chair.id + ': ' + fmtBRL(restante) + (restante <= 0.001 ? ' (cadeira será extinta)' : '');
+  } else if (destTipo === 'nova' && !destEmpresa) {
+    msg = 'Selecione a empresa da nova vaga.';
+    valid = false;
+  } else if (v < Number(chair.valor) - 0.001 && Number(chair.valor) - v < MIN_CARGO_VALOR) {
+    msg = 'O valor restante (' + fmtBRL(Number(chair.valor) - v) + ') ficaria abaixo do menor cargo (' + fmtBRL(MIN_CARGO_VALOR) + '). Mova o valor total ou deixe pelo menos esse valor.';
+    valid = false;
   }
+
+  const restante = Number(chair.valor) - v;
+  const extinta = valid && restante <= 0.001;
+  const novoIdOrigem = valid && !extinta ? previewCompositionId(chair.id) : null;
+  const novoIdDestino = valid && destTipo === 'nova' ? previewNewId({ chairs, buList, empresaList }, destBu, 'C') : null;
 
   async function confirm() {
     setBusy(true);
     try {
-      const destInfo = destTipo === 'nova' ? { torre: destTorre, cargo: destCargo } : { chairId: destChairId };
+      const destInfo = destTipo === 'nova' ? { bu: destBu, torre: destTorre, empresa: destEmpresa, cargo: destCargo } : { chairId: destChairId };
       const res = await decomposeChair(chair.id, destTipo, destInfo, v);
       if (!res.ok) { setError(res.msg); setBusy(false); return; }
       onDone();
@@ -49,23 +61,57 @@ export default function DecomporModal({ chair, onClose, onDone }) {
 
   return (
     <Modal onClose={onClose}>
-      <h3>Decompor {chair.id}</h3>
-      <p className="modal-sub">Origem: <strong>{chair.id}</strong> · {cargoLabel(chair.cargo)} · {chair.torre} · valor disponível {fmtBRL(chair.valor)}</p>
+      <h3>Decompor</h3>
+
+      <div className="modal-section">
+        <label className="modal-label">Vaga a decompor</label>
+        <div className="modal-preview">
+          Selecionada: <strong>{chair.id}</strong> — {cargoLabel(chair.cargo)} ({fmtBRL(chair.valor)})
+        </div>
+      </div>
+
       <DestinoFields
+        label="Decompor em"
         destTipo={destTipo} setDestTipo={setDestTipo}
+        destBu={destBu} setDestBu={setDestBu}
         destTorre={destTorre} setDestTorre={setDestTorre}
+        destEmpresa={destEmpresa} setDestEmpresa={setDestEmpresa}
         destCargo={destCargo} setDestCargo={setDestCargo}
         destChairId={destChairId} setDestChairId={setDestChairId}
+        buList={buList}
+        torreList={torreList}
+        empresaList={empresaList}
+        relacaoBte={relacaoBte}
         otherVagas={otherVagas}
       />
+
       <div className="modal-section">
         <label className="modal-label">Valor a decompor</label>
         <input type="number" min="0" step="100" value={valor} onChange={(e) => setValor(e.target.value)} placeholder={'Ex: ' + chair.valor} />
       </div>
-      <div className="modal-summary">
-        {valid ? msg : <span className="modal-error">{msg}</span>}
+
+      <div className="modal-resumo">
+        <div className="resumo-titulo">Resumo</div>
+        {!valid ? (
+          <div className="modal-error" style={{ marginTop: 0 }}>{msg}</div>
+        ) : (
+          <>
+            {destTipo === 'nova' ? (
+              <div>Vaga criada: <strong>{novoIdDestino}</strong> — {cargoLabel(destCargo)} ({fmtBRL(v)}).</div>
+            ) : (
+              <div>Vaga aumentada: <strong>{destChair.id}</strong> — {cargoLabel(destChair.cargo)} (novo valor {fmtBRL(Number(destChair.valor) + v)}).</div>
+            )}
+            <div>
+              Vaga decomposta: <strong>{chair.id}</strong> — {cargoLabel(chair.cargo)} ({fmtBRL(chair.valor)}){' '}
+              {extinta
+                ? <span className="tag-extinta">— Extinta.</span>
+                : <span className="tag-restante">— restante {fmtBRL(restante)}, novo id {novoIdOrigem}.</span>}
+            </div>
+          </>
+        )}
         {error && <div className="modal-error">{error}</div>}
       </div>
+
       <div className="modal-actions">
         <button className="btn-secondary" onClick={onClose}>Cancelar</button>
         <button className="btn-primary" disabled={!valid || busy} onClick={confirm}>{busy ? 'Confirmando…' : 'Confirmar decomposição'}</button>

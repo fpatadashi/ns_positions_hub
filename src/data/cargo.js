@@ -8,13 +8,14 @@ export const CARGO_INFO = {
   clevel: { label: 'C-Level', valor: 25000 }
 };
 
-export const TORRES = ['Corporate', 'Embarcador', 'PSL'];
-
-export const TORRE_PREFIX = { Corporate: 'COR', Embarcador: 'EMB', PSL: 'PSL' };
-
 export function cargoLabel(key) {
   return CARGO_INFO[key] ? CARGO_INFO[key].label : key;
 }
+
+// Menor valor de cargo configurado — usado como piso do valor residual que uma
+// vaga pode ficar após uma Decomposição/Incorporação parcial (ou 0, ou pelo
+// menos isso). Calculado a partir de CARGO_INFO para nunca destoar dele.
+export const MIN_CARGO_VALOR = Math.min(...Object.values(CARGO_INFO).map((c) => c.valor));
 
 export const TAG_CLASS = {
   'Contratação': 'tag-contratacao',

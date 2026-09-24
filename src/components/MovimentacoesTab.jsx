@@ -15,7 +15,7 @@ export default function MovimentacoesTab() {
             <th>#</th>
             <th>Data/Hora</th>
             <th>Tipo</th>
-            <th>Torre</th>
+            <th>BU</th>
             <th>Cadeira(s)</th>
             <th>Cargo</th>
             <th>Valor</th>
@@ -31,7 +31,7 @@ export default function MovimentacoesTab() {
                 <td className="num">{movements.length - i}</td>
                 <td className="num">{fmtDate(m.created_at)}</td>
                 <td><span className={'tag ' + (TAG_CLASS[m.tipo] || 'tag-inicial')}>{m.tipo}</span></td>
-                <td>{m.torre}</td>
+                <td>{m.bu}</td>
                 <td className="strong">{m.cadeiras}</td>
                 <td>{m.cargo}</td>
                 <td className="num">{fmtBRL(m.valor)}</td>
