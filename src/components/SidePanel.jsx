@@ -1,7 +1,8 @@
-import { useAppData } from '../context/AppDataContext';
-import { cargoLabel } from '../data/cargo';
-import { fmtBRL } from '../lib/format';
-import { torresPermitidas, empresasPermitidas } from '../lib/relacao';
+import { useState } from 'react';
+import { useAppData } from '../shared/context/AppDataContext';
+import { cargoLabel } from '../shared/data/cargo';
+import { fmtBRL, fmtDate, fmtDateOnly } from '../shared/lib/format';
+import { usernameOf } from '../shared/lib/userIdentity';
 
 function ChairHistory({ chair, movements }) {
   const related = movements.filter((m) => m.origem_id === chair.id || m.destino_id === chair.id);
@@ -35,8 +36,15 @@ function ChairHistory({ chair, movements }) {
   );
 }
 
-export default function SidePanel({ chair, onClose, bolsao, bolsaoCap, setModal }) {
-  const { torreList, empresaList, relacaoBte, disciplinas, movements, updateChairFields } = useAppData();
+export default function SidePanel({ chair, onClose, bolsao, bolsaoCap, setModal, onVagaAction }) {
+  const { movements, currentUserEmail, releaseChair } = useAppData();
+  const [reserveError, setReserveError] = useState('');
+
+  async function handleVagaAction(type, extra) {
+    setReserveError('');
+    const res = await onVagaAction(chair.id, type, extra);
+    if (res && !res.ok) setReserveError(res.msg);
+  }
 
   if (chair && chair.status === 'extinta') {
     return (
@@ -56,13 +64,11 @@ export default function SidePanel({ chair, onClose, bolsao, bolsaoCap, setModal 
     );
   }
 
-  if (chair) {
-    const isOcupada = chair.status === 'ocupada';
-    const torreOpts = torresPermitidas(relacaoBte, chair.bu, torreList);
-    const empresaOpts = empresasPermitidas(relacaoBte, chair.bu, chair.torre, empresaList);
+  if (chair && chair.status === 'reservada') {
+    const isMine = chair.reservado_por === currentUserEmail;
     return (
       <aside className="panel">
-        <h2>Detalhe da cadeira</h2>
+        <h2>Resumo da Posição</h2>
         <div className="chair-detail">
           <span className="chip-id">{chair.id}</span>
           <div className="field"><span>BU</span><b>{chair.bu}</b></div>
@@ -70,68 +76,62 @@ export default function SidePanel({ chair, onClose, bolsao, bolsaoCap, setModal 
           <div className="field"><span>Valor</span><b>{fmtBRL(chair.valor)}</b></div>
           <div className="field">
             <span>Status</span>
-            <span className={'status-pill ' + chair.status}>{isOcupada ? 'Ocupada' : 'Vaga'}</span>
+            <span className="status-pill reservada">Em Contratação</span>
+          </div>
+          <div className="field"><span>Reservado por</span><b>{usernameOf(chair.reservado_por)}</b></div>
+          {chair.reservado_em && <div className="field"><span>Desde</span><b>{fmtDate(chair.reservado_em)}</b></div>}
+        </div>
+        <p style={{ fontSize: '0.78rem', color: 'var(--text-faint)' }}>
+          {isMine
+            ? 'Efetive a posição quando a contratação for concluída, ou cancele o status pra voltar a ficar disponível.'
+            : 'Esta posição está em contratação por outra pessoa — nenhuma ação é permitida nela até ser liberada.'}
+        </p>
+        <div className="actions">
+          {isMine && (
+            <>
+              <button className="btn-primary" onClick={() => setModal({ type: 'efetivarPosicao', chairId: chair.id })}>Efetivar posição</button>
+              <button className="btn-secondary" onClick={() => releaseChair(chair.id)}>Cancelar status</button>
+            </>
+          )}
+          <button className="btn-secondary" onClick={onClose}>Fechar</button>
+        </div>
+        <ChairHistory chair={chair} movements={movements} />
+      </aside>
+    );
+  }
+
+  if (chair) {
+    const isOcupada = chair.status === 'ocupada';
+    return (
+      <aside className="panel">
+        <h2>Resumo da Posição</h2>
+        <div className="chair-detail">
+          <span className="chip-id">{chair.id}</span>
+          <div className="field"><span>BU</span><b>{chair.bu}</b></div>
+          <div className="field"><span>Cargo</span><b>{cargoLabel(chair.cargo)}</b></div>
+          <div className="field"><span>Valor</span><b>{fmtBRL(chair.valor)}</b></div>
+          <div className="field">
+            <span>Status</span>
+            <span className={'status-pill ' + chair.status}>{isOcupada ? 'Ocupada' : 'Disponível'}</span>
           </div>
           {isOcupada && <div className="field"><span>Ocupante</span><b>{chair.ocupante}</b></div>}
         </div>
 
-        <div className="modal-section" style={{ marginBottom: 0 }}>
-          <label className="modal-label">Torre</label>
-          <select
-            value={chair.torre || ''}
-            onChange={(e) => updateChairFields(chair.id, { torre: e.target.value || null, empresa: null })}
-          >
-            <option value="">— Sem torre —</option>
-            {torreOpts.map((t) => <option key={t.nome} value={t.nome}>{t.nome}</option>)}
-          </select>
+        <div className="chair-detail" style={{ marginTop: 4 }}>
+          <div className="field"><span>Torre</span><b>{chair.torre || 'Não informado'}</b></div>
+          <div className="field"><span>Empresa</span><b>{chair.empresa || 'Não informado'}</b></div>
+          <div className="field"><span>Disciplina</span><b>{chair.disciplina || 'Não informado'}</b></div>
+          <div className="field"><span>Data início</span><b>{fmtDateOnly(chair.data_inicio) || 'Não informado'}</b></div>
+          <div className="field"><span>Data fim</span><b>{fmtDateOnly(chair.data_fim) || 'Não informado'}</b></div>
         </div>
-        <div className="modal-section" style={{ marginBottom: 0, marginTop: 10 }}>
-          <label className="modal-label">Empresa</label>
-          <select value={chair.empresa || ''} onChange={(e) => updateChairFields(chair.id, { empresa: e.target.value || null })}>
-            <option value="">— Sem empresa —</option>
-            {empresaOpts.map((e) => <option key={e.nome} value={e.nome}>{e.nome}</option>)}
-          </select>
-        </div>
-        <div className="modal-section" style={{ marginBottom: 0, marginTop: 10 }}>
-          <label className="modal-label">Disciplina</label>
-          <select value={chair.disciplina || ''} onChange={(e) => updateChairFields(chair.id, { disciplina: e.target.value || null })}>
-            <option value="">— Sem disciplina —</option>
-            {disciplinas.map((d) => <option key={d} value={d}>{d}</option>)}
-          </select>
-        </div>
-        <div className="vigencia-row">
-          <div className="modal-section" style={{ marginBottom: 0 }}>
-            <label className="modal-label">Data início</label>
-            <input
-              type="date"
-              value={chair.data_inicio || ''}
-              onChange={(e) => updateChairFields(chair.id, { data_inicio: e.target.value || null })}
-            />
-          </div>
-          <div className="modal-section" style={{ marginBottom: 0 }}>
-            <label className="modal-label">Data fim</label>
-            <input
-              type="date"
-              value={chair.data_fim || ''}
-              onChange={(e) => updateChairFields(chair.id, { data_fim: e.target.value || null })}
-            />
-          </div>
-        </div>
+
+        {reserveError && <div className="modal-error">{reserveError}</div>}
 
         <div className="actions">
           {isOcupada ? (
-            <>
-              <button className="btn-gold" onClick={() => setModal({ type: 'promover', chairId: chair.id })}>Promover</button>
-              <button className="btn-secondary" onClick={() => setModal({ type: 'merito', chairId: chair.id })}>Aplicar mérito</button>
-              <button className="btn-danger" onClick={() => setModal({ type: 'confirmDemitir', chairId: chair.id })}>Demitir</button>
-            </>
+            <button className="btn-primary" onClick={() => setModal({ type: 'gerenciarOcupada', chairId: chair.id })}>Gerenciar</button>
           ) : (
-            <>
-              <button className="btn-primary" onClick={() => setModal({ type: 'contratar', chairId: chair.id })}>Contratar</button>
-              <button className="btn-secondary" onClick={() => setModal({ type: 'decompor', chairId: chair.id })}>Decompor</button>
-              <button className="btn-secondary" onClick={() => setModal({ type: 'incorporar', presetOrigemId: chair.id })}>Incorporar</button>
-              <button className="btn-danger" onClick={() => setModal({ type: 'confirmExtinguir', chairId: chair.id })}>Extinguir</button>
-            </>
+            <button className="btn-primary" onClick={() => handleVagaAction('gerenciar')}>Gerenciar</button>
           )}
           <button className="btn-secondary" onClick={onClose}>Fechar</button>
         </div>

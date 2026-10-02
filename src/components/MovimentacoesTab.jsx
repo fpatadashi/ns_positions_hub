@@ -1,6 +1,6 @@
-import { useAppData } from '../context/AppDataContext';
-import { TAG_CLASS } from '../data/cargo';
-import { fmtBRL, fmtDate } from '../lib/format';
+import { useAppData } from '../shared/context/AppDataContext';
+import { TAG_CLASS } from '../shared/data/cargo';
+import { fmtBRL, fmtDate } from '../shared/lib/format';
 
 export default function MovimentacoesTab() {
   const { movements, loading } = useAppData();

@@ -1,0 +1,272 @@
+/* Cadastros (Importação > BU/Torre/Empresa/etc.) */
+.cadastro-header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.cadastro-header-actions{
+  display: flex;
+  gap: 10px;
+}
+
+.cadastro-header-actions button{
+  padding: 8px 14px;
+  font-size: 0.8rem;
+}
+
+.cadastro-add-row{
+  display: grid;
+  grid-template-columns: 1fr 140px auto;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.cadastro-add-row button{ padding: 9px 16px; }
+
+/* Módulos (Importação) */
+.modulos-header{ margin-bottom: 20px; }
+.modulos-header h2{ font-size: 1.2rem; margin: 0 0 4px; color: var(--text); }
+.modulos-header p{ font-size: 0.85rem; color: var(--text-faint); margin: 0; }
+
+.modulos-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.modulo-card{
+  appearance: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: left;
+  transition: box-shadow .15s ease, border-color .15s ease, transform .15s ease;
+}
+
+.modulo-card:hover{
+  border-color: var(--accent);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+
+.modulo-icon{
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.modulo-label{ font-size: 0.92rem; font-weight: 700; color: var(--text); }
+
+.modulo-back{
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-faint);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: 18px;
+}
+
+.modulo-back:hover{ color: var(--accent); }
+
+/* Toggle de visão (Grade / Hierarquia) — Estrutura */
+.view-toggle{
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+  background: var(--surface-raised);
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.view-toggle-btn{
+  appearance: none;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 8px;
+  color: var(--text-faint);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.view-toggle-btn:hover{ color: var(--text-dim); }
+.view-toggle-btn.active{ background: var(--surface); color: var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+
+/* Estrutura — visão hierárquica (BU -> Torre -> Empresa), só leitura, com drill down */
+.estrutura-hierarquia{
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 14px;
+  padding: 8px 12px;
+}
+
+.estrutura-bu-group + .estrutura-bu-group{ border-top: 1px solid var(--surface-line); }
+
+.estrutura-bu-header, .estrutura-torre-header{
+  appearance: none;
+  background: none;
+  border: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+  padding: 10px 8px;
+}
+
+.estrutura-bu-header:hover, .estrutura-torre-header:hover{ background: var(--surface-raised); border-radius: 8px; }
+
+.estrutura-bu-title{ font-weight: 800; font-size: 0.9rem; }
+
+.estrutura-torre-header{ padding-left: 28px; }
+.estrutura-torre-title{ font-weight: 700; font-size: 0.84rem; color: var(--text-dim); }
+
+.estrutura-empresa-list{ padding-left: 62px; padding-bottom: 6px; }
+.estrutura-empresa-row{ font-size: 0.82rem; color: var(--text-dim); padding: 3px 0; }
+
+/* Estrutura (tabela plana) — colunas redimensionáveis, arrastando a borda do cabeçalho */
+.estrutura-resizable{ table-layout: fixed; }
+
+/* Grade estilo Excel: linhas finas cinza-claro em linhas e colunas, com a
+   linha abaixo do cabeçalho um pouco mais grossa/realçada. */
+.estrutura-resizable th,
+.estrutura-resizable td{
+  border-right: 1px solid var(--surface-line);
+}
+
+.estrutura-resizable th:last-child,
+.estrutura-resizable td:last-child{
+  border-right: none;
+}
+
+.estrutura-resizable th{
+  border-bottom: 2px solid #B8C0C6;
+}
+
+.estrutura-th{
+  position: relative;
+  overflow: hidden;
+}
+
+.estrutura-th-view{
+  appearance: none;
+  background: none;
+  border: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: grab;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.estrutura-th-view:active{ cursor: grabbing; }
+
+.estrutura-th-dragover{
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.estrutura-th-label{
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 10px;
+  font-weight: 800;
+  flex: 1;
+  min-width: 0;
+}
+
+.estrutura-th-sort-icon{ opacity: 0.4; flex: 0 0 auto; }
+.estrutura-th-view:hover .estrutura-th-sort-icon{ opacity: 0.8; }
+.estrutura-th-view svg{ flex: 0 0 auto; }
+
+.estrutura-col-resize{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 100%;
+  cursor: col-resize;
+  user-select: none;
+}
+
+.estrutura-col-resize:hover,
+.estrutura-col-resize:active{ background: var(--accent); opacity: 0.35; }
+
+.estrutura-td{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 0; /* força o ellipsis a respeitar a largura da coluna (table-layout: fixed) */
+}
+
+/* Modo de edição (Alterar/Salvar/Cancelar) */
+.estrutura-th-edit{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.estrutura-th-input{
+  width: 100%;
+  min-width: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-faint);
+}
+
+.estrutura-th-input:focus{ outline: none; }
+
+.estrutura-th-remove{
+  appearance: none;
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  flex: 0 0 auto;
+  display: flex;
+  padding: 2px;
+}
+
+.estrutura-th-remove:hover{ color: var(--danger); }
+
+.estrutura-td-input{
+  width: 100%;
+  font-size: 0.82rem;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-dim);
+}
+
+.estrutura-td-input:focus{ outline: none; }

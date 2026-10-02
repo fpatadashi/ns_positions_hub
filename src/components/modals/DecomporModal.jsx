@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Modal from './Modal';
 import DestinoFields from './DestinoFields';
-import { useAppData } from '../../context/AppDataContext';
-import { CARGO_ORDER, cargoLabel, MIN_CARGO_VALOR } from '../../data/cargo';
-import { fmtBRL } from '../../lib/format';
-import { previewNewId, previewCompositionId } from '../../lib/chairActions';
+import { useAppData } from '../../shared/context/AppDataContext';
+import { CARGO_ORDER, cargoLabel, MIN_CARGO_VALOR } from '../../shared/data/cargo';
+import { fmtBRL } from '../../shared/lib/format';
+import { previewNewId, previewCompositionId } from '../../shared/lib/chairActions';
 
 export default function DecomporModal({ chair, onClose, onDone }) {
   const { chairs, buList, torreList, empresaList, relacaoBte, decomposeChair } = useAppData();
@@ -34,7 +34,7 @@ export default function DecomporModal({ chair, onClose, onDone }) {
     msg = 'Selecione a cadeira de destino.';
     valid = false;
   } else if (destTipo === 'nova' && !destEmpresa) {
-    msg = 'Selecione a empresa da nova vaga.';
+    msg = 'Selecione a empresa da nova posição.';
     valid = false;
   } else if (v < Number(chair.valor) - 0.001 && Number(chair.valor) - v < MIN_CARGO_VALOR) {
     msg = 'O valor restante (' + fmtBRL(Number(chair.valor) - v) + ') ficaria abaixo do menor cargo (' + fmtBRL(MIN_CARGO_VALOR) + '). Mova o valor total ou deixe pelo menos esse valor.';
@@ -64,7 +64,7 @@ export default function DecomporModal({ chair, onClose, onDone }) {
       <h3>Decompor</h3>
 
       <div className="modal-section">
-        <label className="modal-label">Vaga a decompor</label>
+        <label className="modal-label">Posição a decompor</label>
         <div className="modal-preview">
           Selecionada: <strong>{chair.id}</strong> — {cargoLabel(chair.cargo)} ({fmtBRL(chair.valor)})
         </div>
@@ -97,12 +97,12 @@ export default function DecomporModal({ chair, onClose, onDone }) {
         ) : (
           <>
             {destTipo === 'nova' ? (
-              <div>Vaga criada: <strong>{novoIdDestino}</strong> — {cargoLabel(destCargo)} ({fmtBRL(v)}).</div>
+              <div>Posição criada: <strong>{novoIdDestino}</strong> — {cargoLabel(destCargo)} ({fmtBRL(v)}).</div>
             ) : (
-              <div>Vaga aumentada: <strong>{destChair.id}</strong> — {cargoLabel(destChair.cargo)} (novo valor {fmtBRL(Number(destChair.valor) + v)}).</div>
+              <div>Posição aumentada: <strong>{destChair.id}</strong> — {cargoLabel(destChair.cargo)} (novo valor {fmtBRL(Number(destChair.valor) + v)}).</div>
             )}
             <div>
-              Vaga decomposta: <strong>{chair.id}</strong> — {cargoLabel(chair.cargo)} ({fmtBRL(chair.valor)}){' '}
+              Posição decomposta: <strong>{chair.id}</strong> — {cargoLabel(chair.cargo)} ({fmtBRL(chair.valor)}){' '}
               {extinta
                 ? <span className="tag-extinta">— Extinta.</span>
                 : <span className="tag-restante">— restante {fmtBRL(restante)}, novo id {novoIdOrigem}.</span>}

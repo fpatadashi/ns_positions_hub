@@ -1,0 +1,249 @@
+.idmgmt-bu-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.idmgmt-bu-card{
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.idmgmt-bu-nome{
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.idmgmt-bu-nums{
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.idmgmt-bu-nums .num{
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.idmgmt-bu-nums .lbl{
+  font-size: 0.78rem;
+  color: var(--text-faint);
+}
+
+.idmgmt-bu-completo{
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--status-ocupada, #16A34A);
+}
+
+.idmgmt-search{
+  margin-bottom: 14px;
+}
+
+.idmgmt-search input{
+  width: 100%;
+}
+
+.idmgmt-table-wrap{
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 16px;
+  overflow: auto;
+  max-height: 560px;
+}
+
+.idmgmt-table{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.idmgmt-table th{
+  position: sticky;
+  top: 0;
+  background: var(--surface-raised);
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+}
+
+.idmgmt-table td{
+  padding: 9px 14px;
+  border-top: 1px solid var(--surface-line);
+}
+
+.idmgmt-table .mono{ font-variant-numeric: tabular-nums; font-size: 0.8rem; }
+
+.idmgmt-status{
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.idmgmt-status-ocupada{ background: rgba(23,43,58,0.08); color: var(--navy); }
+.idmgmt-status-vaga{ background: rgba(22,163,74,0.12); color: #16A34A; }
+.idmgmt-status-reservada{ background: rgba(245,197,24,0.20); color: #8A6D00; }
+.idmgmt-status-extinta{ background: rgba(154,160,171,0.20); color: var(--text-dim); }
+
+.idmgmt-row-clickable{ cursor: pointer; }
+.idmgmt-row-clickable:hover{ background: var(--surface-raised); }
+
+/* Toggle de visão (hierarquia / tabela) — Base de Pessoas */
+.pessoa-view-toggle{
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+  background: var(--surface-raised);
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.pessoa-view-btn{
+  appearance: none;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 8px;
+  color: var(--text-faint);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.pessoa-view-btn:hover{ color: var(--text-dim); }
+.pessoa-view-btn.active{ background: var(--surface); color: var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+
+/* Visão hierárquica: BU -> Torre -> Nomes */
+.pessoa-hierarquia{
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 16px;
+  padding: 20px 22px 24px;
+}
+
+.pessoa-bu-group{ margin-bottom: 22px; }
+.pessoa-bu-group:last-child{ margin-bottom: 0; }
+
+.pessoa-bu-header{
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 6px;
+  color: var(--text);
+}
+
+.pessoa-bu-header:hover{ color: var(--accent); }
+.pessoa-bu-header svg{ flex: 0 0 auto; color: var(--text-faint); }
+
+.pessoa-bu-title{
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding-bottom: 6px;
+  border-bottom: 3px solid var(--accent);
+}
+
+.pessoa-torre-group{
+  margin: 12px 0 12px 4px;
+  padding-left: 16px;
+  border-left: 2px solid var(--surface-line);
+}
+
+.pessoa-torre-header{
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 0 10px;
+  width: 100%;
+}
+
+.pessoa-torre-header:hover .pessoa-torre-title{ color: var(--accent); }
+.pessoa-torre-header svg{ flex: 0 0 auto; color: var(--text-faint); }
+
+.pessoa-torre-title{
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pessoa-name-table{
+  background: var(--surface-raised);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pessoa-name-row{
+  appearance: none;
+  background: none;
+  border: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 10px;
+  padding: 7px 14px;
+  font-size: 0.82rem;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.pessoa-name-row:not(.pessoa-name-row-head):hover{ background: var(--surface); color: var(--accent); }
+
+.pessoa-name-row-head{
+  cursor: default;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--surface-line);
+}
+
+.pessoa-name-row span.mono{ font-variant-numeric: tabular-nums; font-size: 0.78rem; }
+
+/* Ficha da pessoa (modal largo) */
+.ficha-grid{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 24px;
+  margin-top: 16px;
+}
+
+@media (max-width: 640px){ .ficha-grid{ grid-template-columns: 1fr; } }
+
+.ficha-field span{
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
+}
+
+.ficha-field b{
+  font-size: 0.86rem;
+  color: var(--text);
+  font-weight: 600;
+}

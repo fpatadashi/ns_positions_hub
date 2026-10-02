@@ -1,4 +1,4 @@
-export default function Modal({ children, onClose }) {
+export default function Modal({ children, onClose, wide }) {
   return (
     <div
       className="modal-overlay"
@@ -6,7 +6,7 @@ export default function Modal({ children, onClose }) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="modal-box">{children}</div>
+      <div className={'modal-box' + (wide ? ' modal-box-wide' : '')}>{children}</div>
     </div>
   );
 }

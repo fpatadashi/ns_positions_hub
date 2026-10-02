@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Modal from './Modal';
-import { useAppData } from '../../context/AppDataContext';
-import { CARGO_ORDER, CARGO_INFO, cargoLabel, MIN_CARGO_VALOR } from '../../data/cargo';
-import { fmtBRL, fmtNum } from '../../lib/format';
-import { previewNewId, previewCompositionId, nextLoteId } from '../../lib/chairActions';
-import { torresPermitidas, empresasPermitidas } from '../../lib/relacao';
+import { useAppData } from '../../shared/context/AppDataContext';
+import { CARGO_ORDER, CARGO_INFO, cargoLabel, MIN_CARGO_VALOR } from '../../shared/data/cargo';
+import { fmtBRL, fmtNum } from '../../shared/lib/format';
+import { previewNewId, previewCompositionId, nextLoteId } from '../../shared/lib/chairActions';
+import { torresPermitidas, empresasPermitidas } from '../../shared/lib/relacao';
 
 function Field({ title, children }) {
   return (
@@ -24,8 +24,8 @@ export default function BatchModal({ vagas, onClose, onDone }) {
   const [loteId] = useState(() => nextLoteId(movements));
   const decomporDisabled = vagas.length >= 2;
   const TREE_OPTIONS = [
-    { key: 'decompor', label: 'Decompor', hint: 'destino: criar uma vaga nova', disabled: decomporDisabled, disabledHint: 'disponível só com 1 vaga selecionada' },
-    { key: 'incorporar', label: 'Incorporar', hint: 'destino: uma das vagas selecionadas', disabled: false },
+    { key: 'decompor', label: 'Decompor', hint: 'destino: criar uma posição nova', disabled: decomporDisabled, disabledHint: 'disponível só com 1 posição selecionada' },
+    { key: 'incorporar', label: 'Incorporar', hint: 'destino: uma das posições selecionadas', disabled: false },
     { key: 'extinguir', label: 'Extinguir', hint: 'destino: alocar no Bolsão', disabled: false }
   ];
 
@@ -58,10 +58,10 @@ export default function BatchModal({ vagas, onClose, onDone }) {
   let valid = true;
 
   if (destTree === 'incorporar' && !destChairId) {
-    msg = 'Selecione a vaga que vai receber o valor das demais.';
+    msg = 'Selecione a posição que vai receber o valor das demais.';
     valid = false;
   } else if (destTree === 'decompor' && !destEmpresa) {
-    msg = 'Selecione a empresa da nova vaga.';
+    msg = 'Selecione a empresa da nova posição.';
     valid = false;
   } else if (destTree !== 'extinguir') {
     for (const v of sourceVagas) {
@@ -79,7 +79,7 @@ export default function BatchModal({ vagas, onClose, onDone }) {
       }
     }
     if (valid && destTree === 'decompor' && (parseFloat(valores[vagas[0].id]) || 0) <= 0) {
-      msg = 'A primeira vaga do lote precisa contribuir com algum valor para a nova vaga.';
+      msg = 'A primeira posição do lote precisa contribuir com algum valor para a nova posição.';
       valid = false;
     }
   }
@@ -134,15 +134,15 @@ export default function BatchModal({ vagas, onClose, onDone }) {
       <p className="modal-sub">Cada movimentação gerada por esta operação será marcada com o lote #{loteId}.</p>
 
       <div className="lote-block">
-        <div className="lote-block-title">Vagas selecionadas</div>
-        <div className="field-value">{vagas.length} vaga(s)</div>
+        <div className="lote-block-title">Posições selecionadas</div>
+        <div className="field-value">{vagas.length} posição(ões)</div>
       </div>
 
       <div className="lote-block">
         <div className="lote-block-title">Cenário atual</div>
         {vagas.map((v) => (
           <Field title={v.id} key={v.id}>
-            <div className="field-value">{v.bu} - {v.torre || '—'} - Vaga - {fmtNum(v.valor)}</div>
+            <div className="field-value">{v.bu} - {v.torre || '—'} - Disponível - {fmtNum(v.valor)}</div>
           </Field>
         ))}
       </div>
@@ -196,9 +196,9 @@ export default function BatchModal({ vagas, onClose, onDone }) {
         )}
 
         {destTree === 'incorporar' && (
-          <Field title="Vaga selecionada (receptora)">
+          <Field title="Posição selecionada (receptora)">
             <select value={destChairId} onChange={(e) => setDestChairId(e.target.value)}>
-              <option value="">Selecione a vaga receptora</option>
+              <option value="">Selecione a posição receptora</option>
               {vagas.map((v) => (
                 <option key={v.id} value={v.id}>{v.id} — {cargoLabel(v.cargo)} ({fmtBRL(v.valor)})</option>
               ))}
@@ -237,7 +237,7 @@ export default function BatchModal({ vagas, onClose, onDone }) {
 
         {destTree === 'extinguir' && (
           <Field title="Bolsão">
-            <div className="field-value">Cada vaga selecionada será extinta; o valor integral de cada uma vai para o Bolsão.</div>
+            <div className="field-value">Cada posição selecionada será extinta; o valor integral de cada uma vai para o Bolsão.</div>
           </Field>
         )}
       </div>
@@ -262,14 +262,14 @@ export default function BatchModal({ vagas, onClose, onDone }) {
               const extinta = restante <= 0.001;
               return (
                 <div key={v.id}>
-                  <strong>{v.id}</strong> — Vaga ({fmtBRL(full)}) → {extinta
+                  <strong>{v.id}</strong> — Disponível ({fmtBRL(full)}) → {extinta
                     ? <span className="tag-extinta">Extinta.</span>
                     : <span className="tag-restante">Restante {fmtBRL(restante)}, novo id {previewCompositionId(v.id)}.</span>}
                 </div>
               );
             })}
             {destTree === 'extinguir' && vagas.map((v) => (
-              <div key={v.id}><strong>{v.id}</strong> — Vaga ({fmtBRL(v.valor)}) → <span className="tag-extinta">Extinta.</span></div>
+              <div key={v.id}><strong>{v.id}</strong> — Disponível ({fmtBRL(v.valor)}) → <span className="tag-extinta">Extinta.</span></div>
             ))}
             {totalBolsao > 0.001 && (
               <div><strong>Bolsão</strong> — recebeu (+{fmtNum(totalBolsao)}).</div>

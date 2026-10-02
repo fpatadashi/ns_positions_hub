@@ -1,6 +1,6 @@
-import { CARGO_ORDER, CARGO_INFO, cargoLabel } from '../../data/cargo';
-import { fmtBRL } from '../../lib/format';
-import { torresPermitidas, empresasPermitidas } from '../../lib/relacao';
+import { CARGO_ORDER, CARGO_INFO, cargoLabel } from '../../shared/data/cargo';
+import { fmtBRL } from '../../shared/lib/format';
+import { torresPermitidas, empresasPermitidas } from '../../shared/lib/relacao';
 
 export default function DestinoFields({
   label = 'Destino',
@@ -36,7 +36,7 @@ export default function DestinoFields({
       <label className="modal-label">{label}</label>
       <div className="radio-row">
         <label>
-          <input type="radio" checked={destTipo === 'nova'} onChange={() => setDestTipo('nova')} /> Criar nova vaga
+          <input type="radio" checked={destTipo === 'nova'} onChange={() => setDestTipo('nova')} /> Criar nova posição
         </label>
         <label>
           <input
@@ -44,7 +44,7 @@ export default function DestinoFields({
             checked={destTipo === 'existente'}
             disabled={otherVagas.length === 0}
             onChange={() => setDestTipo('existente')}
-          /> Cadeira vaga existente
+          /> Cadeira disponível existente
         </label>
       </div>
 
@@ -69,7 +69,7 @@ export default function DestinoFields({
         <>
           <select value={destChairId} onChange={(e) => setDestChairId(e.target.value)}>
             {otherVagas.length === 0
-              ? <option value="">Nenhuma outra vaga disponível</option>
+              ? <option value="">Nenhuma outra posição disponível</option>
               : otherVagas.map((c) => (
                   <option key={c.id} value={c.id}>{c.id} — {cargoLabel(c.cargo)} ({c.bu}) — {fmtBRL(c.valor)}</option>
                 ))}

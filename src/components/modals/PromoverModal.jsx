@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import Modal from './Modal';
-import { useAppData } from '../../context/AppDataContext';
-import { CARGO_ORDER, CARGO_INFO, cargoLabel } from '../../data/cargo';
-import { fmtBRL } from '../../lib/format';
+import { useAppData } from '../../shared/context/AppDataContext';
+import { CARGO_ORDER, CARGO_INFO, cargoLabel } from '../../shared/data/cargo';
+import { fmtBRL } from '../../shared/lib/format';
 
 export default function PromoverModal({ chair, onClose, onDone }) {
   const { bolsao, promoteChair } = useAppData();

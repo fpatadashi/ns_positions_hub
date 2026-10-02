@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Modal from './Modal';
-import { useAppData } from '../../context/AppDataContext';
-import { fmtBRL } from '../../lib/format';
+import { useAppData } from '../../shared/context/AppDataContext';
+import { fmtBRL } from '../../shared/lib/format';
 
 export default function MeritoModal({ chair, onClose, onDone }) {
   const { bolsao, meritoStandalone } = useAppData();

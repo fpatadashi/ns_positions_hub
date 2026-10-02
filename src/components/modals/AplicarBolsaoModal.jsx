@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import Modal from './Modal';
-import { useAppData } from '../../context/AppDataContext';
-import { CARGO_ORDER, CARGO_INFO, cargoLabel } from '../../data/cargo';
-import { fmtBRL } from '../../lib/format';
-import { torresPermitidas, empresasPermitidas } from '../../lib/relacao';
+import { useAppData } from '../../shared/context/AppDataContext';
+import { CARGO_ORDER, CARGO_INFO, cargoLabel } from '../../shared/data/cargo';
+import { fmtBRL } from '../../shared/lib/format';
+import { torresPermitidas, empresasPermitidas } from '../../shared/lib/relacao';
 
 export default function AplicarBolsaoModal({ onClose, onDone }) {
   const { chairs, bolsao, buList, torreList, empresaList, relacaoBte, meritoStandalone, applyBolsaoNovaVaga } = useAppData();
@@ -34,10 +34,10 @@ export default function AplicarBolsaoModal({ onClose, onDone }) {
     }
   } else {
     const v2 = parseFloat(nvValor) || 0;
-    if (!nvEmpresa) { msg = 'Selecione a empresa da nova vaga.'; valid = false; }
+    if (!nvEmpresa) { msg = 'Selecione a empresa da nova posição.'; valid = false; }
     else if (v2 <= 0) { msg = 'Informe um valor maior que zero.'; valid = false; }
     else if (v2 > bolsao) { msg = 'Bolsão insuficiente (disponível ' + fmtBRL(bolsao) + ').'; valid = false; }
-    else msg = 'Nova vaga será criada com ' + fmtBRL(v2) + '.';
+    else msg = 'Nova posição será criada com ' + fmtBRL(v2) + '.';
   }
 
   async function confirm() {
@@ -60,7 +60,7 @@ export default function AplicarBolsaoModal({ onClose, onDone }) {
       <p className="modal-sub">Saldo disponível: <strong>{fmtBRL(bolsao)}</strong></p>
       <div className="radio-row">
         <label><input type="radio" checked={mode === 'merito'} onChange={() => setMode('merito')} /> Mérito em cadeira ocupada</label>
-        <label><input type="radio" checked={mode === 'novaVaga'} onChange={() => setMode('novaVaga')} /> Criar nova vaga</label>
+        <label><input type="radio" checked={mode === 'novaVaga'} onChange={() => setMode('novaVaga')} /> Criar nova posição</label>
       </div>
       {mode === 'merito' ? (
         <div className="modal-section">

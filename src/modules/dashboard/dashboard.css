@@ -1,0 +1,17 @@
+.dash-panel{
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 20px;
+  padding: 24px 26px 28px;
+}
+
+.dash-filters{
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.dash-filter{
+  min-width: 220px;
+}

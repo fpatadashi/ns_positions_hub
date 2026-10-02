@@ -1,0 +1,214 @@
+/* Filtros rápidos — chips de BU/Torre/Disciplina */
+.quick-filters{
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quick-filter-row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quick-filter-label{
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  flex: 0 0 auto;
+  min-width: 64px;
+}
+
+.filter-chips{
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chip{
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  color: var(--text-dim);
+  padding: 7px 14px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: all .15s ease;
+}
+
+.filter-chip:hover{ color: var(--text); border-color: var(--text-faint); }
+
+.filter-chip.active{
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(255,90,0,0.08);
+}
+
+.filter-chip-count{
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.quick-search-row{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 700px){ .quick-search-row{ grid-template-columns: 1fr; } }
+
+.quick-search-field label{
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  margin-bottom: 4px;
+}
+
+/* Big infos */
+.big-infos-grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 900px){ .big-infos-grid{ grid-template-columns: repeat(2, 1fr); } }
+
+.big-info-card{
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 16px;
+  padding: 18px 20px;
+  text-align: center;
+}
+
+.big-info-card .num{
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.big-info-card .lbl{
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  margin-top: 4px;
+}
+
+/* Resumo da estrutura selecionada */
+.resumo-estrutura-bar{
+  background: var(--surface);
+  border: 1px solid var(--surface-line);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.resumo-estrutura-titulo{
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+
+.resumo-estrutura-titulo b{ color: var(--text); }
+
+.resumo-estrutura-stats{
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.resumo-estrutura-stat{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resumo-estrutura-stat .dot{
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.resumo-estrutura-stat .lbl{
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.resumo-estrutura-stat .num{
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Estrutura de cadeiras: BU -> Torre -> Cargo -> Cadeira */
+.bu-group{ margin-bottom: 26px; }
+.bu-group:last-child{ margin-bottom: 0; }
+
+.bu-group-header{
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 6px;
+  color: var(--text);
+}
+
+.bu-group-header:hover{ color: var(--accent); }
+.bu-group-header svg{ flex: 0 0 auto; color: var(--text-faint); }
+
+.bu-group-title{
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding-bottom: 6px;
+  border-bottom: 3px solid var(--accent);
+}
+
+.bu-group-resumo{
+  background: var(--surface-raised);
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin: 4px 0 14px;
+}
+
+.bu-group-resumo .resumo-estrutura-stats{ gap: 16px; }
+.bu-group-resumo .resumo-estrutura-stat .num{ font-size: 0.82rem; }
+
+.torre-group{
+  margin: 14px 0 14px 4px;
+  padding-left: 16px;
+  border-left: 2px solid var(--surface-line);
+}
+
+.torre-group-title{
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}

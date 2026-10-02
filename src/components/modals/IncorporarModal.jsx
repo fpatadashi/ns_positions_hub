@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Modal from './Modal';
 import DestinoFields from './DestinoFields';
-import { useAppData } from '../../context/AppDataContext';
-import { CARGO_ORDER, cargoLabel, MIN_CARGO_VALOR } from '../../data/cargo';
-import { fmtBRL } from '../../lib/format';
-import { previewNewId, previewCompositionId } from '../../lib/chairActions';
+import { useAppData } from '../../shared/context/AppDataContext';
+import { CARGO_ORDER, cargoLabel, MIN_CARGO_VALOR } from '../../shared/data/cargo';
+import { fmtBRL } from '../../shared/lib/format';
+import { previewNewId, previewCompositionId } from '../../shared/lib/chairActions';
 
 export default function IncorporarModal({ presetOrigemId, onClose, onDone }) {
   const { chairs, buList, torreList, empresaList, relacaoBte, incorporarChair } = useAppData();
@@ -27,7 +27,7 @@ export default function IncorporarModal({ presetOrigemId, onClose, onDone }) {
     return (
       <Modal onClose={onClose}>
         <h3>Incorporar</h3>
-        <p className="modal-sub">Não há cadeiras vagas disponíveis para incorporar.</p>
+        <p className="modal-sub">Não há cadeiras disponíveis para incorporar.</p>
         <div className="modal-actions">
           <button className="btn-secondary" onClick={onClose}>Fechar</button>
         </div>
@@ -52,7 +52,7 @@ export default function IncorporarModal({ presetOrigemId, onClose, onDone }) {
     msg = 'Selecione a cadeira de destino.';
     valid = false;
   } else if (destTipo === 'nova' && !destEmpresa) {
-    msg = 'Selecione a empresa da nova vaga.';
+    msg = 'Selecione a empresa da nova posição.';
     valid = false;
   } else if (v < Number(origem.valor) - 0.001 && Number(origem.valor) - v < MIN_CARGO_VALOR) {
     msg = 'O valor restante (' + fmtBRL(Number(origem.valor) - v) + ') ficaria abaixo do menor cargo (' + fmtBRL(MIN_CARGO_VALOR) + '). Mova o valor total ou deixe pelo menos esse valor.';
@@ -82,7 +82,7 @@ export default function IncorporarModal({ presetOrigemId, onClose, onDone }) {
       <h3>Incorporar</h3>
 
       <div className="modal-section">
-        <label className="modal-label">Vaga a incorporar</label>
+        <label className="modal-label">Posição a incorporar</label>
         <select value={origemId} onChange={(e) => { setOrigemId(e.target.value); setDestChairId(''); }}>
           {vagas.map((c) => (
             <option key={c.id} value={c.id}>{c.id} — {cargoLabel(c.cargo)} ({c.bu}) — {fmtBRL(c.valor)}</option>
@@ -120,12 +120,12 @@ export default function IncorporarModal({ presetOrigemId, onClose, onDone }) {
         ) : (
           <>
             {destTipo === 'nova' ? (
-              <div>Vaga criada: <strong>{novoIdDestino}</strong> — {cargoLabel(destCargo)} ({fmtBRL(v)}).</div>
+              <div>Posição criada: <strong>{novoIdDestino}</strong> — {cargoLabel(destCargo)} ({fmtBRL(v)}).</div>
             ) : (
-              <div>Vaga aumentada: <strong>{destChair.id}</strong> — {cargoLabel(destChair.cargo)} (novo valor {fmtBRL(Number(destChair.valor) + v)}).</div>
+              <div>Posição aumentada: <strong>{destChair.id}</strong> — {cargoLabel(destChair.cargo)} (novo valor {fmtBRL(Number(destChair.valor) + v)}).</div>
             )}
             <div>
-              Vaga incorporada: <strong>{origem.id}</strong> — {cargoLabel(origem.cargo)} ({fmtBRL(origem.valor)}){' '}
+              Posição incorporada: <strong>{origem.id}</strong> — {cargoLabel(origem.cargo)} ({fmtBRL(origem.valor)}){' '}
               {extinta
                 ? <span className="tag-extinta">— Extinta.</span>
                 : <span className="tag-restante">— restante {fmtBRL(restante)}, novo id {novoIdOrigem}.</span>}
