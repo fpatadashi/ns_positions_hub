@@ -145,8 +145,8 @@ h1 span{ color: var(--accent); }
 }
 
 .torre-card{
-  background: var(--surface);
-  border: 1px solid var(--surface-line);
+  background: #DCEBFA;
+  border: 1px solid #B6D2F2;
   border-radius: 18px;
   padding: 20px 22px 24px;
 }
